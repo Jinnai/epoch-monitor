@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Epoch Monitor (dev)",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "pnpm",
+      "args": ["run", "dev"],
+      "envFile": "${workspaceFolder}/.env",
+      "restart": false,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Epoch Monitor (start)",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "pnpm",
+      "args": ["run", "start"],
+      "envFile": "${workspaceFolder}/.env",
+      "restart": false,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Deploy Commands",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "pnpm",
+      "args": ["run", "deploy-commands"],
+      "envFile": "${workspaceFolder}/.env",
+      "restart": false,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
