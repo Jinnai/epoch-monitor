@@ -8,3 +8,4 @@
 2. Install dependencies:
    ```sh
    pnpm install
+   ```

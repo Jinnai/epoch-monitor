@@ -6,7 +6,7 @@ import { monitorServerStatus } from "./lib/serverStatus.js";
 
 config();
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
 });
 
 client.once("ready", async () => {
@@ -30,7 +30,7 @@ client.on("interactionCreate", async (interaction) => {
     console.error(`Error handling command ${commandName}:`, err);
     await interaction.reply({
       content: "❌ There was an error executing this command.",
-      flags: MessageFlags.Ephemeral,
+      flags: MessageFlags.Ephemeral
     });
   }
 });

@@ -6,7 +6,7 @@ import path from "path";
 config();
 
 const commands = [];
-const commandsPath = path.resolve(process.cwd(), 'src', 'commands');
+const commandsPath = path.resolve(process.cwd(), "src", "commands");
 const commandFiles = fs
   .readdirSync(commandsPath)
   .filter((file) => file.endsWith(".js"));
@@ -35,7 +35,7 @@ try {
   } else {
     // Global registration (takes ~1 hour)
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
-      body: commands,
+      body: commands
     });
     console.log("✅ Commands registered globally.");
   }

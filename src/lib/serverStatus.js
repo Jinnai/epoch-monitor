@@ -7,7 +7,7 @@ const delaySeconds = 8;
 const monitoredPorts = [
   { port: 3724, label: "Auth server" },
   { port: 8085, label: "Kezan" },
-  { port: 8086, label: "Gurubashi" },
+  { port: 8086, label: "Gurubashi" }
 ];
 
 const lastStatusMap = new Map();
@@ -32,7 +32,7 @@ function isPortOpen(host, port, timeout = 2000) {
 
 async function sendStatusMessage(channel, roleId, label, status) {
   const rolePing = roleId ? ` <@&${roleId}>` : "";
-  const msg = `🚨${rolePing} ${label} went **${status}** 🚨`
+  const msg = `🚨${rolePing} ${label} went **${status}** 🚨`;
 
   logger.info(msg);
   await channel.send(msg);

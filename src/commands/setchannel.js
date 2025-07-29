@@ -2,7 +2,7 @@ import {
   ChannelType,
   MessageFlags,
   PermissionFlagsBits,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } from "discord.js";
 import { saveChannelForGuild } from "../lib/guildStore.js";
 
@@ -25,6 +25,6 @@ export async function execute(interaction) {
 
   await interaction.reply({
     content: `✅ Alerts will now be posted in ${channel}`,
-    flags: MessageFlags.Ephemeral,
+    flags: MessageFlags.Ephemeral
   });
 }

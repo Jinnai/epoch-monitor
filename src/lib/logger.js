@@ -6,9 +6,9 @@ const logger = pino({
     targets: [
       {
         target: "pino-pretty",
-        options: { colorize: true },
-      },
-    ],
-  },
+        options: { colorize: true }
+      }
+    ]
+  }
 });
 export default logger;

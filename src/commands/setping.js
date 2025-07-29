@@ -1,7 +1,7 @@
 import {
   MessageFlags,
   PermissionFlagsBits,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } from "discord.js";
 import { saveRoleForGuild } from "../lib/guildStore.js";
 
@@ -22,6 +22,6 @@ export async function execute(interaction) {
 
   await interaction.reply({
     content: `✅ Role <@&${role.id}> will now be pinged in alerts.`,
-    flags: MessageFlags.Ephemeral,
+    flags: MessageFlags.Ephemeral
   });
 }
