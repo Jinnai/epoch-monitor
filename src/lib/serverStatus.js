@@ -10,6 +10,15 @@ const monitoredPorts = [
   { port: 8086, label: "Gurubashi" }
 ];
 
+const emojiMap = {
+  "Gurubashi_ONLINE": "<a:NOWAYING:1307834547274121297>",
+  "Gurubashi_OFFLINE": "<a:peace_out:834742726008373289>",
+  "Kezan_ONLINE": "<a:humanmale:790940951249158164>",
+  "Kezan_OFFLINE": "<:pepepoint:947479443402788895>",
+  "Auth server_ONLINE": "<a:owN:887489983542341693>",
+  "Auth server_OFFLINE": "<:britbong:798931087853486111>",
+};
+
 const lastStatusMap = new Map();
 
 function isPortOpen(host, port, timeout = 2000) {
@@ -31,8 +40,12 @@ function isPortOpen(host, port, timeout = 2000) {
 }
 
 async function sendStatusMessage(channel, roleId, label, status) {
-  const rolePing = roleId ? ` <@&${roleId}>` : "";
-  const msg = `🚨${rolePing} ${label} went **${status}** 🚨`;
+  const key = `${label}_${status}`;
+  const emoji = emojiMap[key] || "";
+  // Only ping role if Gurubashi went ONLINE
+  const shouldPing = label === "Gurubashi" && status === "ONLINE";
+  const rolePing = shouldPing && roleId ? ` <@&${roleId}>` : "";
+  const msg = `${emoji}${rolePing} ${label} went **${status}** ${emoji}`;
 
   logger.info(msg);
   await channel.send(msg);
