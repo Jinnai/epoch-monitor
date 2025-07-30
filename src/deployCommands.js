@@ -31,10 +31,7 @@ try {
     // Register per guild (instant, good for testing)
     for (const guildId of guildIds) {
       await rest.put(
-        Routes.applicationGuildCommands(
-          process.env.CLIENT_ID,
-          guildId
-        ),
+        Routes.applicationGuildCommands(process.env.CLIENT_ID, guildId),
         { body: commands }
       );
       console.log(`✅ Commands registered to guild ${guildId}.`);

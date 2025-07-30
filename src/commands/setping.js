@@ -8,7 +8,9 @@ import logger from "../lib/logger.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setping")
-  .setDescription("Set the role to mention for alerts (currently only pings for GURUBASHI -> ONLINE)")
+  .setDescription(
+    "Set the role to mention for alerts (currently only pings for GURUBASHI -> ONLINE)"
+  )
   .addRoleOption((option) =>
     option
       .setName("role")
