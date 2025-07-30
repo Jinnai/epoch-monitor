@@ -22,16 +22,23 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 try {
   console.log("🛠️  Registering slash commands...");
 
-  if (process.env.GUILD_ID) {
+  const guildIds = (process.env.GUILD_ID || "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+
+  if (guildIds.length > 0) {
     // Register per guild (instant, good for testing)
-    await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
-      { body: commands }
-    );
-    console.log("✅ Commands registered to guild.");
+    for (const guildId of guildIds) {
+      await rest.put(
+        Routes.applicationGuildCommands(
+          process.env.CLIENT_ID,
+          guildId
+        ),
+        { body: commands }
+      );
+      console.log(`✅ Commands registered to guild ${guildId}.`);
+    }
   } else {
     // Global registration (takes ~1 hour)
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {

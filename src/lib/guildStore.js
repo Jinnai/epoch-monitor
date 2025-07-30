@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import logger from "./logger.js";
 const filePath = "./guildSettings.json";
 
 async function loadStore() {
@@ -36,9 +37,16 @@ export async function clearRoleForGuild(guildId) {
   }
 }
 
-export async function getSettingsForGuild(guildId) {
+export async function saveTrackedServersForGuild(guildId, servers) {
   const store = await loadStore();
-  return store[guildId] ?? {};
+  store[guildId] ??= {};
+  store[guildId].trackedServers = servers;
+  await saveStore(store);
+}
+
+export async function getTrackedServersForGuild(guildId) {
+  const store = await loadStore();
+  return store[guildId]?.trackedServers ?? ["GURUBASHI"];
 }
 
 export async function getAllSettings(client) {
@@ -55,10 +63,7 @@ export async function getAllSettings(client) {
         results.push({ channel, roleId });
       }
     } catch (err) {
-      console.warn(
-        `Could not fetch channel for guild ${guildId}:`,
-        err.message
-      );
+      logger.warn(`Could not fetch channel for guild ${guildId}:`, err.message);
     }
   }
 

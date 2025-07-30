@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 import { clearRoleForGuild } from "../lib/guildStore.js";
+import logger from "../lib/logger.js";
 
 export const data = new SlashCommandBuilder()
   .setName("clearping")
@@ -11,6 +12,10 @@ export const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
 
 export async function execute(interaction) {
+  logger.info(
+    `[${interaction.guild.name}] '/clearping' used by ${interaction.user.tag}`
+  );
+
   await clearRoleForGuild(interaction.guild.id);
 
   await interaction.reply({

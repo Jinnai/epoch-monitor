@@ -5,6 +5,7 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 import { saveChannelForGuild } from "../lib/guildStore.js";
+import logger from "../lib/logger.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setchannel")
@@ -20,6 +21,10 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   const channel = interaction.options.getChannel("channel");
+
+  logger.info(
+    `[${interaction.guild.name}] '/setchannel #${channel.name}' used by ${interaction.user.tag}`
+  );
 
   await saveChannelForGuild(interaction.guild.id, channel.id);
 

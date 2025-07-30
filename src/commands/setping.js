@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 import { saveRoleForGuild } from "../lib/guildStore.js";
+import logger from "../lib/logger.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setping")
@@ -18,6 +19,11 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   const role = interaction.options.getRole("role");
+
+  logger.info(
+    `[${interaction.guild.name}] '/setping @${role.name}' used by ${interaction.user.tag}`
+  );
+
   await saveRoleForGuild(interaction.guild.id, role.id);
 
   await interaction.reply({

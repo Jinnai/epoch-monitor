@@ -1,27 +1,34 @@
 import net from "net";
+import { getTrackedServersForGuild } from "./guildStore.js";
 import logger from "./logger.js";
 
 const server = "game.project-epoch.net";
-const delaySeconds = 8;
+const delaySeconds = 12;
 
 const monitoredPorts = [
-  { port: 3724, label: "Auth server" },
-  { port: 8085, label: "Kezan" },
-  { port: 8086, label: "Gurubashi" }
+  { port: 3724, label: "AUTH" },
+  { port: 8085, label: "KEZAN" },
+  { port: 8086, label: "GURUBASHI" }
 ];
 
-const emojiMap = {
-  "Gurubashi_ONLINE": "<a:NOWAYING:1307834547274121297>",
-  "Gurubashi_OFFLINE": "<a:peace_out:834742726008373289>",
-  "Kezan_ONLINE": "<a:humanmale:790940951249158164>",
-  "Kezan_OFFLINE": "<:pepepoint:947479443402788895>",
-  "Auth server_ONLINE": "<a:owN:887489983542341693>",
-  "Auth server_OFFLINE": "<:britbong:798931087853486111>",
+const labelMap = {
+  AUTH: "Auth server",
+  KEZAN: "Kezan",
+  GURUBASHI: "Gurubashi"
 };
 
-const lastStatusMap = new Map();
+const emojiMap = {
+  GURUBASHI_ONLINE: "<a:NOWAYING:1307834547274121297>",
+  GURUBASHI_OFFLINE: "<a:peace_out:834742726008373289>",
+  KEZAN_ONLINE: "<a:humanmale:790940951249158164>",
+  KEZAN_OFFLINE: "<:pepepoint:947479443402788895>",
+  AUTH_ONLINE: "<a:owN:887489983542341693>",
+  AUTH_OFFLINE: "<:britbong:798931087853486111>"
+};
 
-function isPortOpen(host, port, timeout = 2000) {
+const lastStatusMap = new Map(); // guildId -> Map(port, status)
+
+function isPortOpen(host, port, timeout = 3000) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     let isConnected = false;
@@ -42,27 +49,41 @@ function isPortOpen(host, port, timeout = 2000) {
 async function sendStatusMessage(channel, roleId, label, status) {
   const key = `${label}_${status}`;
   const emoji = emojiMap[key] || "";
-  // Only ping role if Gurubashi went ONLINE
-  const shouldPing = label === "Gurubashi" && status === "ONLINE";
+  const displayLabel = labelMap[label] || label;
+  // Only ping role if GURUBASHI went ONLINE
+  const shouldPing = label === "GURUBASHI" && status === "ONLINE";
   const rolePing = shouldPing && roleId ? ` <@&${roleId}>` : "";
-  const msg = `${emoji}${rolePing} ${label} went **${status}** ${emoji}`;
+  const msg = `${emoji}${rolePing} ${displayLabel} went **${status}** ${emoji}`;
 
-  logger.info(msg);
+  logger.info(`${channel.guild.name}: ${msg}`);
   await channel.send(msg);
 }
 
-export async function monitorServerStatus(discordChannel, roleId) {
+export async function monitorServerStatus(channel, roleId) {
   async function check() {
-    for (const { port, label } of monitoredPorts) {
-      const isUp = await isPortOpen(server, port);
-      const status = isUp ? "ONLINE" : "OFFLINE";
-      const lastStatus = lastStatusMap.get(port);
+    const guildId = channel.guild.id;
+    let guildStatus = lastStatusMap.get(guildId);
+    if (!guildStatus) {
+      guildStatus = new Map();
+      lastStatusMap.set(guildId, guildStatus);
+    }
 
-      if (lastStatus !== undefined && lastStatus !== status) {
-        await sendStatusMessage(discordChannel, roleId, label, status);
+    const trackedServers = await getTrackedServersForGuild(guildId);
+
+    for (const { port, label } of monitoredPorts) {
+      if (!trackedServers.includes(label)) {
+        continue;
       }
 
-      lastStatusMap.set(port, status);
+      const isUp = await isPortOpen(server, port);
+      const status = isUp ? "ONLINE" : "OFFLINE";
+      const lastStatus = guildStatus.get(port);
+
+      if (lastStatus !== undefined && lastStatus !== status) {
+        await sendStatusMessage(channel, roleId, label, status);
+      }
+
+      guildStatus.set(port, status);
     }
 
     setTimeout(check, delaySeconds * 1000);

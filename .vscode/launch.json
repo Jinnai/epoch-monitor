@@ -8,23 +8,34 @@
       "console": "integratedTerminal",
       "runtimeExecutable": "pnpm",
       "args": ["run", "dev"],
-      "envFile": "${workspaceFolder}/.env",
+      "envFile": "${workspaceFolder}/.dev.env",
       "restart": false,
       "skipFiles": ["<node_internals>/**"]
     },
     {
-      "name": "Epoch Monitor (start)",
+      "name": "Epoch Monitor (prod)",
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
       "runtimeExecutable": "pnpm",
-      "args": ["run", "start"],
+      "args": ["run", "dev"],
       "envFile": "${workspaceFolder}/.env",
       "restart": false,
       "skipFiles": ["<node_internals>/**"]
     },
     {
-      "name": "Deploy Commands",
+      "name": "Deploy Commands (dev)",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "pnpm",
+      "args": ["run", "deploy-commands"],
+      "envFile": "${workspaceFolder}/.dev.env",
+      "restart": false,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Deploy Commands (prod)",
       "type": "node",
       "request": "launch",
       "console": "integratedTerminal",
