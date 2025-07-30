@@ -44,6 +44,17 @@
       "envFile": "${workspaceFolder}/.env",
       "restart": false,
       "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Clear Commands",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "pnpm",
+      "args": ["run", "clear-commands"],
+      "envFile": "${workspaceFolder}/.env",
+      "restart": false,
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
