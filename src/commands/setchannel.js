@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { saveChannelForGuild } from "../lib/guildStore.js";
 import logger from "../lib/logger.js";
+import { monitorServerStatus } from "../lib/serverStatus.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setchannel")
@@ -21,12 +22,21 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   const channel = interaction.options.getChannel("channel");
+  const guild = interaction.guild;
 
   logger.info(
-    `[${interaction.guild.name}] '/setchannel #${channel.name}' used by ${interaction.user.tag}`
+    `[${guild.name}] '/setchannel #${channel.name}' used by ${interaction.user.tag}`
   );
 
-  await saveChannelForGuild(interaction.guild.id, channel.id);
+  await saveChannelForGuild(guild.id, channel.id);
+
+  // Fetch roleId if set, otherwise undefined
+  const store = await import("../lib/guildStore.js");
+  const settings = await store.loadStore();
+  const roleId = settings[guild.id]?.roleId;
+
+  // Start monitoring for this channel immediately
+  monitorServerStatus(channel, roleId);
 
   await interaction.reply({
     content: `✅ Alerts will now be posted in ${channel}`,

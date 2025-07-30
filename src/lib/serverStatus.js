@@ -26,6 +26,7 @@ const emojiMap = {
   AUTH_OFFLINE: "<:britbong:798931087853486111>"
 };
 
+const monitorIntervals = new Map(); // guildId -> timeout handle
 const lastStatusMap = new Map(); // guildId -> Map(port, status)
 
 function isPortOpen(host, port, timeout = 3000) {
@@ -60,8 +61,15 @@ async function sendStatusMessage(channel, roleId, label, status) {
 }
 
 export async function monitorServerStatus(channel, roleId) {
+  const guildId = channel.guild.id;
+
+  // Stop any existing monitor for this guild
+  if (monitorIntervals.has(guildId)) {
+    clearTimeout(monitorIntervals.get(guildId));
+    monitorIntervals.delete(guildId);
+  }
+
   async function check() {
-    const guildId = channel.guild.id;
     let guildStatus = lastStatusMap.get(guildId);
     if (!guildStatus) {
       guildStatus = new Map();
@@ -86,7 +94,9 @@ export async function monitorServerStatus(channel, roleId) {
       guildStatus.set(port, status);
     }
 
-    setTimeout(check, delaySeconds * 1000);
+    // Store the timeout handle so it can be cleared later
+    const timeout = setTimeout(check, delaySeconds * 1000);
+    monitorIntervals.set(guildId, timeout);
   }
 
   logger.info("Starting server port monitor...");
