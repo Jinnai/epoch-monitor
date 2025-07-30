@@ -54,18 +54,17 @@ export async function getTrackedServersForGuild(guildId) {
   return store[guildId]?.trackedServers ?? ["GURUBASHI"];
 }
 
-export async function getAllSettings(client) {
+export async function getAllChannels(client) {
   const store = await loadStore();
   const results = [];
 
   for (const guildId in store) {
     const channelId = store[guildId].channelId;
-    const roleId = store[guildId].roleId;
     try {
       const guild = await client.guilds.fetch(guildId);
       const channel = await guild.channels.fetch(channelId);
       if (channel && channel.isTextBased()) {
-        results.push({ channel, roleId });
+        results.push(channel);
       }
     } catch (err) {
       logger.warn(`Could not fetch channel for guild ${guildId}:`, err.message);

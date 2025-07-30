@@ -32,8 +32,7 @@ export async function execute(interaction) {
   await saveChannelForGuild(guild.id, channel.id);
 
   // Start monitoring for this channel immediately
-  const roleId = await getRoleIdForGuild(guild.id);
-  monitorServerStatus(channel, roleId);
+  monitorServerStatus(channel);
 
   await interaction.reply({
     content: `✅ Alerts will now be posted in ${channel}`,

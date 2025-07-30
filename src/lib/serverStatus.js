@@ -1,5 +1,5 @@
 import net from "net";
-import { getTrackedServersForGuild } from "./guildStore.js";
+import { getRoleIdForGuild, getTrackedServersForGuild } from "./guildStore.js";
 import logger from "./logger.js";
 
 const server = "game.project-epoch.net";
@@ -47,20 +47,32 @@ function isPortOpen(host, port, timeout = 3000) {
   });
 }
 
+function getRolePing(label, status, roleId, guildId) {
+  let rolePing = "";
+
+  // Only ping role if GURUBASHI went ONLINE
+  const shouldPing = label === "GURUBASHI" && status === "ONLINE";
+
+  if (shouldPing && roleId) {
+    rolePing = roleId === guildId ? " @everyone" : ` <@&${roleId}>`;
+  }
+
+  return rolePing;
+}
+
 async function sendStatusMessage(channel, roleId, label, status) {
+  const guild = channel.guild;
   const key = `${label}_${status}`;
   const emoji = emojiMap[key] || "";
   const displayLabel = labelMap[label] || label;
-  // Only ping role if GURUBASHI went ONLINE
-  const shouldPing = label === "GURUBASHI" && status === "ONLINE";
-  const rolePing = shouldPing && roleId ? ` <@&${roleId}>` : "";
+  const rolePing = getRolePing(label, status, roleId, guild.id);
   const msg = `${emoji}${rolePing} ${displayLabel} went **${status}** ${emoji}`;
 
-  logger.info(`${channel.guild.name}: ${msg}`);
+  logger.info(`${guild.name}: ${msg}`);
   await channel.send(msg);
 }
 
-export async function monitorServerStatus(channel, roleId) {
+export async function monitorServerStatus(channel) {
   const guildId = channel.guild.id;
 
   // Stop any existing monitor for this guild
@@ -88,6 +100,7 @@ export async function monitorServerStatus(channel, roleId) {
       const lastStatus = guildStatus.get(port);
 
       if (lastStatus !== undefined && lastStatus !== status) {
+        const roleId = await getRoleIdForGuild(guildId);
         await sendStatusMessage(channel, roleId, label, status);
       }
 

@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits, MessageFlags } from "discord.js";
 import { config } from "dotenv";
-import { getAllSettings } from "./lib/guildStore.js";
+import { getAllChannels } from "./lib/guildStore.js";
 import logger from "./lib/logger.js";
 import { monitorServerStatus } from "./lib/serverStatus.js";
 
@@ -12,9 +12,9 @@ const client = new Client({
 client.once("ready", async () => {
   logger.info(`Logged in as ${client.user.tag}`);
 
-  const settings = await getAllSettings(client);
-  for (const { channel, roleId } of settings) {
-    monitorServerStatus(channel, roleId);
+  const channels = await getAllChannels(client);
+  for (const channel of channels) {
+    monitorServerStatus(channel);
   }
 });
 
