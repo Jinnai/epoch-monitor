@@ -37,6 +37,11 @@ export async function clearRoleForGuild(guildId) {
   }
 }
 
+export async function getRoleIdForGuild(guildId) {
+  const store = await loadStore();
+  return store[guildId]?.roleId;
+}
+
 export async function saveTrackedServersForGuild(guildId, servers) {
   const store = await loadStore();
   store[guildId] ??= {};

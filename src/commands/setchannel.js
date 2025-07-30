@@ -7,6 +7,7 @@ import {
 import { saveChannelForGuild } from "../lib/guildStore.js";
 import logger from "../lib/logger.js";
 import { monitorServerStatus } from "../lib/serverStatus.js";
+import { getRoleIdForGuild } from "../lib/guildStore.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setchannel")
@@ -30,12 +31,8 @@ export async function execute(interaction) {
 
   await saveChannelForGuild(guild.id, channel.id);
 
-  // Fetch roleId if set, otherwise undefined
-  const store = await import("../lib/guildStore.js");
-  const settings = await store.loadStore();
-  const roleId = settings[guild.id]?.roleId;
-
   // Start monitoring for this channel immediately
+  const roleId = await getRoleIdForGuild(guild.id);
   monitorServerStatus(channel, roleId);
 
   await interaction.reply({
